@@ -12,7 +12,7 @@ istioctl install --set profile=demo -y
 ```console
 kubectl patch svc istio-ingressgateway -n istio-system -p '{"spec": {"type": "NodePort"}}'
 ```
-### For this exercise we will consider example of bookinfo app.
+### For this exercise we will consider example of bookinfo app:
 #### The application displays information about a book, similar to a single catalog entry of an online book store. Displayed on the page is a description of the book, book details (ISBN, number of pages, and so on), and a few book reviews.
 
 #### The Bookinfo application is broken into four separate microservices:
@@ -23,6 +23,7 @@ kubectl patch svc istio-ingressgateway -n istio-system -p '{"spec": {"type": "No
 - Ratings: The ratings microservice contains book ranking information that accompanies a book review.
 
 ![bookinfo app architecture](withistio.svg)
+
 There are 3 versions of the reviews microservice:
 - Version v1 doesn’t call the ratings service.
 - Version v2 calls the ratings service, and displays each rating as 1 to 5 black stars.
