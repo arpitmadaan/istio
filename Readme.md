@@ -1,5 +1,4 @@
-# Istio Setup
-
+# Istio Exercise
 ### Download Istio contents using below commands and set the path in bin
 ```console
 curl -L https://istio.io/downloadIstio | sh -
@@ -32,7 +31,7 @@ kubectl patch svc istio-ingressgateway -n istio-system -p '{"spec": {"type": "No
 ```console
 kubectl create ns bookinfo
 ```
-### Enable the namespace for Istio injection
+### Enable the namespace for Istio injection. It  will deploy Envoy proxy as a sidecar container in all the pods of the namespace
 ```console
 kubectl label namespace bookinfo istio-injection=enabled
 ```
@@ -49,9 +48,11 @@ kubectl apply -f bookinfo/bookinfo.yaml -n bookinfo
 kubectl exec <ratings-pod-name> -n bookinfo -c ratings -- curl -sS productpage:9080/productpage | grep -o "<title>.*</title>"
 ```
 ### Now that the Bookinfo services are up and running, you need to make the application accessible from outside of your Kubernetes cluster, e.g., from a browser. A gateway is used for this purpose.
-### We are also creating a virtual service.
+### Istio Gateway Controller is an advanced substitute of Ingress Controller used in Kubernetes. It is deployed as ingress and egress. In Istio, a Gateway defines how traffic is allowed to enter or leave the service mesh. It controls access to services running inside the mesh and is primarily used for managing ingress (incoming) and egress (outgoing) traffic to and from the mesh. While Kubernetes has its own Ingress resource, Istio’s Gateway gives more fine-grained control over the routing, particularly when combined with Istio’s VirtualService resource.
+### Once a Gateway is defined, a VirtualService is used to define rules on how to route the incoming traffic to the appropriate service inside the mesh.
+### We will be creating a gateway object and a virtual service.
 ```console
-kubectl apply -f bookinfo/bookinfo-gateway.yaml -n bookinfo
+kubectl apply -f bookinfo/bookinfo-gateway-vs.yaml -n bookinfo
 ```
 ### Confirm the gateway has been created
 ```console
@@ -74,3 +75,22 @@ kubectl apply -f addons/prometheus.yaml -n istio-system
 while sleep 0.01; do curl -sS "http://${GATEWAY_URL}/productpage" &> /dev/null ; done
 ```
 ![Kiali UI of app bookinfo](kiali.png)
+
+###  Destination Rules are used to configure policies that apply to traffic intended for a particular service after it has been routed by a VirtualService. They provide control over things like load balancing, connection pool settings, circuit breaking, and subsets of the service (which allow fine-grained control over different versions or subsets of the service).
+### A subset within a Destination Rule represents a group of service instances that are differentiated based on specific labels (e.g., different versions of a service). Subsets are commonly used for traffic splitting, canary deployments, or A/B testing, where traffic is directed to specific versions of a service based on criteria defined in the VirtualService.
+
+### Our requirement is to send to 60% of traffic to reviews v1 and remaining 20-20 to v2 and v3. For this we will create a virtual service and a destination rule with 60-20-20 weights to their respective subsets. USe the below commands to create them.
+```console
+kubectl apply -f bookinfo/destination-rule.yaml -n bookinfo
+kubectl apply -f bookinfo/virtual-service-reviews-60-20-20.yaml -n bookinfo
+```
+### Now you can see the traffic distribution on Kiali Dashboard
+![Traffic distribution of 60-20-20](kiali-60-20-20.png)
+### Next we would like to introduce some errors, to check if the error handling mechanisms are working as expected. This is a testing approach known as fault injection. We can inject errors in our virtual service which could be error or delay. In this example we will add a delay of 5 seconds in details service to 70% of requests.
+```console
+kubectl apply -f bookinfo/fault-injection-details.yaml -n bookinfo
+```
+### You can see in the image below that there is a red line showing 4.8 secs of delay for details service
+![Fault Injection Delay](fault-injection-details.png)
+
+### You can configure timeouts, retries and circuit breaking through Istio. This way you don't have to handle these problems in application code.
