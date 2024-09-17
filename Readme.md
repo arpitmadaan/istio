@@ -96,3 +96,8 @@ kubectl apply -f bookinfo/fault-injection-details.yaml -n bookinfo
 ![Fault Injection Delay](fault-injection-details.png)
 
 #### You can configure timeouts, retries and circuit breaking through Istio. This way you don't have to handle these problems in application code.
+#### Use the below command to delete the sample app bookinfo and all its resources
+```console
+kubectl delete -f bookinfo/ -n bookinfo
+kubectl delete ns bookinfo
+```
