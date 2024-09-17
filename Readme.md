@@ -17,16 +17,16 @@ kubectl patch svc istio-ingressgateway -n istio-system -p '{"spec": {"type": "No
 
 #### The Bookinfo application is broken into four separate microservices:
 
-#### Productpage: The productpage microservice calls the details and reviews microservices to populate the page.
-#### Details: The details microservice contains book information.
-#### Reviews: The reviews microservice contains book reviews. It also calls the ratings microservice.
-#### Ratings: The ratings microservice contains book ranking information that accompanies a book review.
+- Productpage: The productpage microservice calls the details and reviews microservices to populate the page.
+- Details: The details microservice contains book information.
+- Reviews: The reviews microservice contains book reviews. It also calls the ratings microservice.
+- Ratings: The ratings microservice contains book ranking information that accompanies a book review.
 
 ![bookinfo app architecture](withistio.svg)
-#### There are 3 versions of the reviews microservice:
-#### Version v1 doesn’t call the ratings service.
-#### Version v2 calls the ratings service, and displays each rating as 1 to 5 black stars.
-#### Version v3 calls the ratings service, and displays each rating as 1 to 5 red stars.
+There are 3 versions of the reviews microservice:
+- Version v1 doesn’t call the ratings service.
+- Version v2 calls the ratings service, and displays each rating as 1 to 5 black stars.
+- Version v3 calls the ratings service, and displays each rating as 1 to 5 red stars.
 
 4. Create a new namespace 
 ```console
@@ -85,13 +85,13 @@ while sleep 0.01; do curl -sS "http://${GATEWAY_URL}/productpage" &> /dev/null ;
 kubectl apply -f bookinfo/destination-rule.yaml -n bookinfo
 kubectl apply -f bookinfo/virtual-service-reviews-60-20-20.yaml -n bookinfo
 ```
-### Now you can see the traffic distribution on Kiali Dashboard
+#### Now you can see the traffic distribution on Kiali Dashboard
 ![Traffic distribution of 60-20-20](kiali-60-20-20.png)
 16. Next we would like to introduce some errors, to check if the error handling mechanisms are working as expected. This is a testing approach known as fault injection. We can inject errors in our virtual service which could be error or delay. In this example we will add a delay of 5 seconds in details service to 70% of requests:
 ```console
 kubectl apply -f bookinfo/fault-injection-details.yaml -n bookinfo
 ```
-### You can see in the image below that there is a red line showing 4.8 secs of delay for details service
+#### You can see in the image below that there is a red line showing 4.8 secs of delay for details service
 ![Fault Injection Delay](fault-injection-details.png)
 
-### You can configure timeouts, retries and circuit breaking through Istio. This way you don't have to handle these problems in application code.
+#### You can configure timeouts, retries and circuit breaking through Istio. This way you don't have to handle these problems in application code.
