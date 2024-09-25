@@ -93,7 +93,7 @@ kubectl apply -f bookinfo/virtual-service-reviews-60-20-20.yaml -n bookinfo
 ```
 #### Now we can see the traffic distribution on Kiali Dashboard
 ![Traffic distribution of 60-20-20](images/kiali-60-20-20.png)
-16. Next we would like to introduce some errors, to check if the error handling mechanisms are working as expected. This is a testing approach known as fault injection. We can inject errors in our virtual service which could be error or delay. In this example we will add a delay of 5 seconds in details service to 70% of requests:
+16. Next we would introduce some errors, to check if the error handling mechanisms are working as expected. This is a testing approach known as fault injection. We can inject errors in our virtual service which could be error or delay. In this example we will add a delay of 5 seconds in details service to 70% of requests:
 ```console
 kubectl apply -f bookinfo/fault-injection-details.yaml -n bookinfo
 ```
@@ -127,8 +127,10 @@ trafficPolicy:
 1: Service-to-Service Encryption
 - Istio provides mutual TLS (mTLS) to ensure secure communication between microservices. With mTLS, both the client and the server authenticate each other, and the communication is encrypted.
 - Istio can automatically manage TLS certificates for services within the mesh, handle certificate rotation, and manage secure communication without changes to application code.
+
 2: Authentication
 - Istio supports JWT (JSON Web Token) authentication to verify the identity of users or services. It ensures that only valid users or services can interact with the microservices.
+
 3: Authorization
 - Istio implements Role-Based Access Control (RBAC) policies to control which users or services can access specific resources.
 
@@ -176,4 +178,5 @@ kubectl delete ns bookinfo
 ```
 #### If you find any mistakes or scope of improvement, please reach out to me at amadaan7@gmail.com
 Follow me on LinkedIn: https://www.linkedin.com/in/arpitmadaan/
+
 Follow me on Medium: https://medium.com/@amadaan7
